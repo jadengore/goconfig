@@ -16,6 +16,11 @@ func testGet(t *testing.T, c *ConfigFile, section string, option string, expecte
 		if v == expected.(string) {
 			ok = true
 		}
+	case int:
+		v, _ := c.GetInt(section, option)
+		if v == expected.(int) {
+			ok = true
+		}
 	case int64:
 		v, _ := c.GetInt64(section, option)
 		if v == expected.(int64) {
@@ -62,6 +67,12 @@ func TestInMemory(t *testing.T) {
 	_, err = c.GetString("no-section", "no-option")
 	if err == nil {
 		t.Errorf("GetString failure: got value for missing section/option")
+	}
+
+	// get value from missing section/option
+	_, err = c.GetInt("no-section", "no-option")
+	if err == nil {
+		t.Errorf("GetInt failure: got value for missing section/option")
 	}
 
 	// get value from missing section/option
@@ -131,6 +142,7 @@ func TestInMemory(t *testing.T) {
 	if !c.AddOption("section2", "test-number", "666") { // add number
 		t.Errorf("AddOption failure: false on first insert")
 	}
+	testGet(t, c, "section2", "test-number", int(666))   // read it back
 	testGet(t, c, "section2", "test-number", int64(666)) // read it back
 
 	if !c.AddOption("section2", "test-yes", "yes") { // add 'yes' (bool)
@@ -232,6 +244,7 @@ func TestWriteReadFile(t *testing.T) {
 	}
 
 	testGet(t, cr, "first-section", "option1", "value option1")
+	testGet(t, cr, "first-section", "option2", int(2))
 	testGet(t, cr, "first-section", "option2", int64(2))
 	testGet(t, cr, "Another-SECTION", "usehttps", true)
 	testGet(t, cr, "another-section", "url", "https://www.example.com/some/path")

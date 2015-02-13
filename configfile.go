@@ -492,6 +492,22 @@ func (c *ConfigFile) GetString(section string, option string) (string, error) {
 }
 
 // GetInt has the same behaviour as GetString but converts the response to int.
+func (c *ConfigFile) GetInt(section string, option string) (int, error) {
+
+	sv, err := c.GetString(section, option)
+	if err != nil {
+		return 0, err
+	}
+
+	value, err := strconv.Atoi(sv)
+	if err != nil {
+		return 0, err
+	}
+
+	return value, nil
+}
+
+// GetInt64 has the same behaviour as GetString but converts the response to int64.
 func (c *ConfigFile) GetInt64(section string, option string) (int64, error) {
 
 	sv, err := c.GetString(section, option)
